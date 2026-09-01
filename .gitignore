@@ -1,11 +1,27 @@
+# Dependencies
 node_modules/
 vendor/
+
+# Environment
 .env
 .env.local
+.env.*.local
+
+# Logs
 *.log
+npm-debug.log*
+
+# OS files
 .DS_Store
 Thumbs.db
-/dist
-/build
+desktop.ini
+
+# Editor
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Build output
+/dist
+/build

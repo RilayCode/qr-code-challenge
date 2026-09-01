@@ -1,100 +1,88 @@
-# Frontend Mentor - QR code component
+# Frontend Mentor - QR code component solution
 
-![Design preview for the QR code component coding challenge](./preview.jpg)
+This is a solution to the [QR code component challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/qr-code-component-iux_sIO_H). Frontend Mentor challenges help you improve your coding skills by building realistic projects.
 
-## Welcome! 👋
+## Table of contents
 
-Thanks for checking out this front-end coding challenge.
+- [Overview](#overview)
+  - [Screenshot](#screenshot)
+  - [Links](#links)
+- [My process](#my-process)
+  - [Built with](#built-with)
+  - [What I learned](#what-i-learned)
+  - [Continued development](#continued-development)
+  - [Useful resources](#useful-resources)
+  - [AI Collaboration](#ai-collaboration)
+- [Author](#author)
 
-[Frontend Mentor](https://www.frontendmentor.io) challenges help you improve your coding skills by building realistic projects.
+## Overview
 
-**To do this challenge, you need a basic understanding of HTML and CSS.**
+### Screenshot
 
-## The challenge
+![Screenshot of the QR code card, showing the blue QR image and the card text on a light blue background](./screenshot.jpg)
 
-Your challenge is to build out this QR code component and get it looking as close to the design as possible.
+### Links
 
-You can use any tools you like to help you complete the challenge. So if you've got something you'd like to practice, feel free to give it a go.
+- Solution URL: [github.com/RilayCode/qr-code-challenge](https://github.com/RilayCode/qr-code-challenge)
+- Live Site URL: [Ajouter l'URL une fois le site déployé (GitHub Pages / Netlify / Vercel)](https://your-live-site-url.com)
 
-### Want some support on the challenge? 
+## My process
 
-[Join our community](https://www.frontendmentor.io/community) and ask questions in the **#help** channel.
+### Built with
 
-## Where to find everything
+- Semantic HTML5 markup
+- SCSS (compiled to CSS)
+- Flexbox for layout
+- CSS custom properties, used as a bridge between JavaScript and CSS for live-updated values
+- CSS keyframe animations & transitions
+- Vanilla JavaScript (ES6+) for the interactive layer
+- Mobile-first, fluid single-card layout (no breakpoints needed at this size)
 
-Your task is to build out the project to the designs inside the `/design` folder. You will find both a mobile and a desktop version of the design. 
+### What I learned
 
-The designs are in JPG static format. Using JPGs will mean that you'll need to use your best judgment for styles such as `font-size`, `padding` and `margin`. 
+Le point de départ de ce projet était une animation "machine à écrire" cassée : le titre et le paragraphe utilisaient `animation: width 0 → 100%` avec `white-space: normal`. Ça marche très bien pour du texte sur une seule ligne, mais dès que le texte passe à la ligne, la boîte qui s'élargit provoque une réorganisation du texte en plein milieu de l'animation - visuellement, ça "explose". J'ai remplacé cette approche par un vrai effet machine à écrire piloté en JavaScript (caractère par caractère), qui ne dépend plus du retour à la ligne.
 
-If you would like the Figma design file to gain experience using professional tools and build more accurate projects faster, you can [subscribe as a PRO member](https://www.frontendmentor.io/pro).
+```js
+const typeText = (el, text, speed) => new Promise((resolve) => {
+  el.textContent = '';
+  let i = 0;
+  const tick = () => {
+    if (i < text.length) {
+      el.append(text[i]);
+      i += 1;
+      setTimeout(tick, speed);
+    } else {
+      resolve();
+    }
+  };
+  tick();
+});
+```
 
-You will find all the required assets in the `/images` folder. The assets are already optimized.
+J'ai aussi découvert comment faire communiquer JS et CSS proprement grâce aux **custom properties** : plutôt que de manipuler `element.style.transform` directement en JS (ce qui écrase toute transition CSS), j'expose des variables (`--rx`, `--ry`, `--lift`) que je mets à jour depuis le JS, et c'est le CSS qui décide comment les interpréter et les transitionner. Ça garde une séparation nette entre "le JS pilote la donnée" et "le CSS pilote le rendu".
 
-There is also a `style-guide.md` file containing the information you'll need, such as color palette and fonts.
+Enfin, j'ai appris à toujours prévoir un chemin de repli pour l'accessibilité avec `prefers-reduced-motion`, et à éviter les pièges classiques du "flash of unstyled content" en scindant les styles entre `.no-js` et `.js` (une classe basculée en tout début de `<head>`), pour que le contenu reste visible même si le JavaScript ne se charge pas.
 
-## Using AI coding assistants
+### Continued development
 
-We've included two files to help you if you're using AI coding assistants (like Claude, GitHub Copilot, Cursor, etc.) while working on this challenge:
+- Explorer une vraie interaction "scan" (ex: passer le QR code dans une lightbox agrandie au clic, plutôt qu'un simple effet ripple)
+- Approfondir les animations pilotées par `requestAnimationFrame` pour un contrôle plus fin que `setTimeout`
+- Tester l'accessibilité clavier/lecteur d'écran de façon plus poussée sur des composants interactifs similaires
 
-- `AGENTS.md` - Contains detailed instructions for AI assistants on how to help you with this challenge. It's tailored to this challenge's difficulty level, so the AI will provide guidance appropriate to your learning stage—offering more support for beginner challenges and encouraging more independence on advanced ones.
-- `CLAUDE.md` - A pointer file that directs Claude-based tools to the AGENTS.md instructions.
+### Useful resources
 
-**How to use them:** You don't need to do anything! These files are automatically detected by most AI coding tools. The AI will read them and adjust its behavior to be a better learning partner—guiding you toward solutions rather than just giving you the answers.
+- [MDN - prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - pour comprendre comment respecter les préférences d'accessibilité liées au mouvement.
+- [MDN - Using CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) - la référence pour bien comprendre comment lier JS et CSS via des variables.
+- [MDN - Pointer events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events) - utilisé pour l'effet de tilt 3D et le ripple au clic, unifié souris/tactile.
 
-**Note:** These files are designed to help you *learn*, not to do the work for you. The AI is instructed to ask questions, give hints, and explain concepts rather than writing complete solutions.
+### AI Collaboration
 
-## Building your project
+J'ai utilisé Claude Code (Anthropic) sur la phase de finition du projet, une fois le HTML/CSS du challenge terminé par mes soins.
 
-Feel free to use any workflow that you feel comfortable with. Below is a suggested process, but do not feel like you need to follow these steps:
+- **Ce que j'ai fait avec l'IA** : diagnostiquer et corriger l'animation "machine à écrire" cassée, ajouter une couche d'interactions JS (typewriter, tilt 3D au survol, effet ripple au clic, halo pulsant sur le QR code), et rédiger ce README.
+- **Ce qui a bien fonctionné** : l'IA a d'abord cherché à me faire diagnostiquer le bug moi-même (le fichier `AGENTS.md` du projet la configure en mode mentor) avant que je clarifie que le codage du challenge était terminé et que je voulais son aide directe pour la partie créative/finition.
+- **Point d'attention** : toujours vérifier ce que l'IA écrit avant de le garder - dans mon cas, les animations ont été testées dans un vrai navigateur (Playwright) avant d'être validées, y compris le repli en cas de `prefers-reduced-motion`.
 
-1. Initialize your project as a public repository on [GitHub](https://github.com/). Creating a repo will make it easier to share your code with the community if you need help. If you're not sure how to do this, [have a read-through of this Try Git resource](https://try.github.io/).
-2. Configure your repository to publish your code to a web address. This will also be useful if you need some help during a challenge as you can share the URL for your project with your repo URL. There are a number of ways to do this, and we provide some recommendations below.
-3. Look through the designs to start planning out how you'll tackle the project. This step is crucial to help you think ahead for CSS classes to create reusable styles.
-4. Before adding any styles, structure your content with HTML. Writing your HTML first can help focus your attention on creating well-structured content.
-5. Write out the base styles for your project, including general content styles, such as `font-family` and `font-size`.
-6. Start adding styles to the top of the page and work down. Only move on to the next section once you're happy you've completed the area you're working on.
+## Author
 
-## Deploying your project
-
-As mentioned above, there are many ways to host your project for free. Our recommended hosts are:
-
-- [GitHub Pages](https://pages.github.com/)
-- [Vercel](https://vercel.com/)
-- [Netlify](https://www.netlify.com/)
-
-You can host your site using one of these solutions or any of our other trusted providers. [Read more about our recommended and trusted hosts](https://www.frontendmentor.io/guides/hosting-your-solution).
-
-## Create a custom `README.md`
-
-We strongly recommend overwriting this `README.md` with a custom one. We've provided a template inside the [`README-template.md`](./README-template.md) file in this starter code.
-
-The template provides a guide for what to add. A custom `README` will help you explain your project and reflect on your learnings. Please feel free to edit our template as much as you like.
-
-Once you've added your information to the template, delete this file and rename the `README-template.md` file to `README.md`. That will make it show up as your repository's README file.
-
-## Submitting your solution
-
-Submit your solution on the platform for the rest of the community to see. Follow our ["Complete guide to submitting solutions"](https://www.frontendmentor.io/guides/how-to-submit-solutions) for tips on how to do this.
-
-Remember, if you're looking for feedback on your solution, be sure to ask questions when submitting it. The more specific and detailed you are with your questions, the higher the chance you'll get valuable feedback from the community.
-
-## Sharing your solution
-
-There are multiple places you can share your solution:
-
-1. Share your solution page in the **#finished-projects** channel of the [community](https://www.frontendmentor.io/community). 
-2. Share on [X (formerly Twitter)](https://x.com/frontendmentor) and mention **@frontendmentor**, including the repo and live URLs in your post. We'd love to take a look at what you've built and help share it around.
-3. Share your solution on [LinkedIn](https://www.linkedin.com/company/frontend-mentor/).
-4. Blog about your experience building your project. Writing about your workflow, technical choices, and talking through your code is a brilliant way to reinforce what you've learned. Great platforms to write on are [dev.to](https://dev.to/), [Hashnode](https://hashnode.com/), and [CodeNewbie](https://community.codenewbie.org/).
-
-We provide templates to help you share your solution once you've submitted it on the platform. Please do edit them and include specific questions when you're looking for feedback. 
-
-The more specific you are with your questions the more likely it is that another member of the community will give you feedback.
-
-## Got feedback for us?
-
-We love receiving feedback! We're always looking to improve our challenges and our platform. So if you have anything you'd like to mention, please email hi[at]frontendmentor[dot]io.
-
-This challenge is completely free. Please share it with anyone who will find it useful for practice.
-
-**Have fun building!** 🚀
+- GitHub - [@RilayCode](https://github.com/RilayCode)
