@@ -1,6 +1,8 @@
 (() => {
   const card = document.querySelector('.card');
   const heading = card.querySelector('.detail h1');
+  const srTitle = heading.querySelector('.sr-only');
+  const typewriter = heading.querySelector('.typewriter');
   const paragraph = card.querySelector('.detail p');
   const imgWrapper = card.querySelector('.img');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -28,14 +30,14 @@
   const revealParagraph = () => paragraph.classList.add('reveal');
 
   const runIntro = async () => {
-    const title = heading.textContent.trim();
+    const title = srTitle.textContent.trim();
     if (reduceMotion) {
-      heading.textContent = title;
+      typewriter.textContent = title;
       revealParagraph();
       return;
     }
     await new Promise((resolve) => setTimeout(resolve, 550));
-    await typeText(heading, title, 32);
+    await typeText(typewriter, title, 32);
     setTimeout(revealParagraph, 150);
   };
 
@@ -68,6 +70,7 @@
       const size = Math.max(rect.width, rect.height);
       const ripple = document.createElement('span');
       ripple.className = 'ripple';
+      ripple.setAttribute('aria-hidden', 'true');
       ripple.style.width = `${size}px`;
       ripple.style.height = `${size}px`;
       ripple.style.left = `${event.clientX - rect.left}px`;
